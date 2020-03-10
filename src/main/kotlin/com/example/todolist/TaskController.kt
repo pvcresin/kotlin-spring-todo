@@ -1,5 +1,6 @@
 package com.example.todolist
 
+import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
 import org.springframework.validation.BindingResult
@@ -14,12 +15,12 @@ class TaskController(private val taskRepository: TaskRepository) {
     fun index(model: Model): String {
         val tasks = taskRepository.findAll()
         model.addAttribute("tasks", tasks)
-        return "tasks/index"
+        return "/tasks/index"
     }
 
     @GetMapping("new")
     fun index(form: TaskCreateForm): String {
-        return "tasks/new"
+        return "/tasks/new"
     }
 
     @GetMapping("{id}/edit")
@@ -28,12 +29,12 @@ class TaskController(private val taskRepository: TaskRepository) {
         val task = taskRepository.findById(id) ?: throw NotFoundException()
         form.content = task.content
         form.done = task.done
-        return "tasks/edit"
+        return "/tasks/edit"
     }
 
     @PostMapping("")
     fun create(@Validated form : TaskCreateForm, bindingResult: BindingResult): String {
-        if (bindingResult.hasErrors()) return "tasks/new"
+        if (bindingResult.hasErrors()) return "/tasks/new"
 
         val content = requireNotNull(form.content)
         taskRepository.create(content)
@@ -44,11 +45,15 @@ class TaskController(private val taskRepository: TaskRepository) {
     fun edit(@PathVariable("id") id: Long,
              @Validated form: TaskUpdateForm,
              bindingResult: BindingResult): String {
-        if (bindingResult.hasErrors()) return "tasks/edit"
+        if (bindingResult.hasErrors()) return "/tasks/edit"
 
         val task = taskRepository.findById(id) ?: throw NotFoundException()
         val newTask = task.copy(content = requireNotNull(form.content), done = form.done)
         taskRepository.update(newTask)
         return "redirect:/tasks"
     }
+
+    @ExceptionHandler(NotFoundException::class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    fun handleNotFoundException(): String = "/tasks/not_found"
 }
