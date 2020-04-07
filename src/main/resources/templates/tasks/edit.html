@@ -8,13 +8,13 @@
 <form th:method="post" th:action="@{./}" th:object="${taskUpdateForm}">
     <div>
         <label>
-            内容: <input type="text" th:field="*{content}" />
+            content: <input type="text" th:field="*{content}" />
         </label>
-        <p th:if="${#fields.hasErrors('content')}" th:errors="*{content}">エラーメッセージ</p>
+        <p th:if="${#fields.hasErrors('content')}" th:errors="*{content}">Error message</p>
     </div>
     <div>
         <label>
-            完了: <input type="checkbox" th:field="*{done}" />
+            Complete: <input type="checkbox" th:field="*{done}" />
         </label>
     </div>
     <div>
